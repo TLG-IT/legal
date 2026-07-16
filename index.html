@@ -1,4 +1,62 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TLG Global Legal Department</title>
 
-</script></body></html>
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+}
+
+iframe {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    border: none;
+}
+</style>
+</head>
+<body>
+
+<iframe
+    id="site"
+    src="https://tlg.global/residency-by-investment/#Portugal"
+    allowfullscreen>
+</iframe>
+
+<script>
+// Attempt fullscreen
+async function goFullscreen() {
+    try {
+        if (!document.fullscreenElement) {
+            await document.documentElement.requestFullscreen();
+        }
+    } catch(e) {}
+}
+
+window.onload = goFullscreen;
+
+// Enter fullscreen on first click (required by many browsers)
+document.addEventListener("click", goFullscreen, { once: true });
+
+// Hide mouse cursor
+let timer;
+document.onmousemove = function () {
+    document.body.style.cursor = "default";
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+        document.body.style.cursor = "none";
+    }, 2000);
+};
+</script>
+
+</body>
+</html>
