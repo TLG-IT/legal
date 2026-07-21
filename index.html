@@ -13,49 +13,178 @@ html, body {
     height: 100%;
     overflow: hidden;
     background: #000;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
-iframe {
-    position: fixed;
-    inset: 0;
-    width: 100vw;
-    height: 100vh;
-    border: none;
+/* ===========================
+   TOP BAR
+=========================== */
+#topbar{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:50px;
+    background:rgba(0,0,0,.88);
+    z-index:9999;
+}
+
+#department{
+    position:absolute;
+    left:18px;
+    top:50%;
+    transform:translateY(-50%);
+    color:#ffffff;
+    font-size:18px;
+    font-weight:bold;
+    white-space:nowrap;
+}
+
+#dashboardLabel{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    color:#00d4ff;
+    font-size:20px;
+    font-weight:bold;
+    white-space:nowrap;
+}
+
+#switchInfo{
+    position:absolute;
+    right:18px;
+    top:50%;
+    transform:translateY(-50%);
+    color:#ffffff;
+    font-size:18px;
+    font-weight:bold;
+    white-space:nowrap;
+}
+
+#timer{
+    color:#00ff66;
+}
+
+/* ===========================
+   DASHBOARD
+=========================== */
+iframe{
+    position:fixed;
+    top:50px;
+    left:0;
+    width:100%;
+    height:calc(100% - 50px);
+    border:none;
+    background:#fff;
 }
 </style>
 </head>
+
 <body>
 
-<iframe
-    id="site"
-    src="https://analytics.zoho.com/ZDBSlideshow.cc?SLIDEID=2298565000025365609&SLIDEKEY=858880755f35f22028d65e3a60346d785c941b3491660260eb268e2475c6ab1c&INTERVAL=25&AUTOPLAY=true&INCLUDETITLE=true&INCLUDEDESC=true&SOCIALWIDGETS=false"
-    allowfullscreen>
-</iframe>
+<div id="topbar">
+    <div id="department">
+        TLG Global Legal Department
+    </div>
+
+    <div id="dashboardLabel">
+        Document collection Status
+    </div>
+
+    <div id="switchInfo">
+        Next Switch:
+        <span id="timer">150s</span>
+    </div>
+</div>
+
+<iframe id="site" allowfullscreen></iframe>
 
 <script>
-// Attempt fullscreen
-async function goFullscreen() {
-    try {
-        if (!document.fullscreenElement) {
-            await document.documentElement.requestFullscreen();
-        }
-    } catch(e) {}
+
+const SWITCH_TIME = 150;
+
+const dashboards = [
+{
+    name: "Document collection Status",
+    url: "https://analytics.zoho.com/ZDBSlideshow.cc?SLIDEID=2298565000025365609&SLIDEKEY=858880755f35f22028d65e3a60346d785c941b3491660260eb268e2475c6ab1c&INTERVAL=25&AUTOPLAY=true&INCLUDETITLE=true&INCLUDEDESC=true&SOCIALWIDGETS=false"
+},
+{
+    name: "Contract Request Database Details",
+    url: "https://analytics.zoho.com/ZDBSlideshow.cc?SLIDEID=2298565000025398060&SLIDEKEY=89be909ff1912a40d506f881dfd10a80302b80dfdac7eb3d1072515afee532c7&INTERVAL=25&AUTOPLAY=true&INCLUDETITLE=true&INCLUDEDESC=true&SOCIALWIDGETS=false"
+}
+];
+
+let currentDashboard = 0;
+let remaining = SWITCH_TIME;
+
+const iframe = document.getElementById("site");
+const timer = document.getElementById("timer");
+const dashboardLabel = document.getElementById("dashboardLabel");
+
+function loadDashboard(index){
+    iframe.src = dashboards[index].url;
+    dashboardLabel.textContent = dashboards[index].name;
 }
 
-window.onload = goFullscreen;
+loadDashboard(currentDashboard);
 
-// Enter fullscreen on first click (required by many browsers)
-document.addEventListener("click", goFullscreen, { once: true });
+setInterval(function(){
 
-// Hide mouse cursor
-let timer;
-document.onmousemove = function () {
-    document.body.style.cursor = "default";
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-        document.body.style.cursor = "none";
-    }, 2000);
+    remaining--;
+
+    timer.textContent = remaining + "s";
+
+    if(remaining <= 0){
+
+        currentDashboard++;
+
+        if(currentDashboard >= dashboards.length){
+            currentDashboard = 0;
+        }
+
+        loadDashboard(currentDashboard);
+
+        remaining = SWITCH_TIME;
+        timer.textContent = remaining + "s";
+    }
+
+},1000);
+
+/* Fullscreen */
+
+async function goFullscreen(){
+    try{
+        if(!document.fullscreenElement){
+            await document.documentElement.requestFullscreen();
+        }
+    }catch(e){}
+}
+
+window.onload = function(){
+    goFullscreen();
 };
+
+document.addEventListener("click",goFullscreen,{once:true});
+
+/* Hide Cursor */
+
+let hideTimer;
+
+document.onmousemove=function(){
+
+    document.body.style.cursor="default";
+
+    clearTimeout(hideTimer);
+
+    hideTimer=setTimeout(function(){
+
+        document.body.style.cursor="none";
+
+    },2000);
+
+};
+
 </script>
 
 </body>
